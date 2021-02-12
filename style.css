@@ -6,8 +6,80 @@
 --indian-yellow: #e09f3eff;
 --turquoise-blue: #80ffecff;
 --red-salsa: #f15156ff;
-
 }
+
+/* Fonts chosen ###
+Font-family: 'Alegreya Sans', sans-serif
+Font-family: 'Catamaran', sans-serif
+Font-family: 'Kanit', sans-serif
+
+*/
+
+body {
+    background-color:var(--onyx);
+    font-family: 'Kanit';
+}
+h1{
+    font-size:5rem;
+    font-weight:100;
+    margin-top:0;
+    color: #DDD;
+}
+#container{
+    display:flex;
+    flex-flow:column wrap;
+    align-items:center;
+}
+
+/*Gameboard Styling*/
+#gameboard{
+    
+    margin-top:3rem;
+    display:grid;
+    grid-template-areas: 
+        'a1 a2 a3'
+        'b1 b2 b3'
+        'c1 c2 c3';
+        width:30rem;
+        height:30rem;
+        
+}
+
+.cell {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:6rem;
+    color:#DDD;
+    cursor:pointer;
+    transition: all 0.2s linear;
+    font-weight:100;
+}
+.cell:hover{
+    background-color:#666;
+}
+.vertical-cell
+{
+border-left:1px solid #666;
+border-right:1px solid #666;
+}
+.horizontal-cell{
+    
+        border-top:1px solid #666;
+        border-bottom:1px solid #666;
+        
+}
+/*Scores Section Styling*/
+#scores {
+    display:flex;
+    font-size:3rem;
+    justify-content:space-between;
+    margin-top:2rem;
+    color:#DDD;
+    font-weight:200;
+}
+
+
 
 /*Portrait Phone*/
 @media (max-width: 575.98px) {
