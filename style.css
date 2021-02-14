@@ -79,6 +79,16 @@ border-right:1px solid #666;
     font-weight:200;
 }
 
+.orange-text{
+color:var(--indian-yellow);
+}
+.blue-text{
+    color:var(--turquoise-blue);
+}
+.border-bottom{
+    border-bottom:0.5rem solid #AAA;
+}
+
 
 
 /*Portrait Phone*/
