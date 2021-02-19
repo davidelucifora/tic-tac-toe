@@ -14,6 +14,11 @@ Font-family: 'Catamaran', sans-serif
 Font-family: 'Kanit', sans-serif
 
 */
+/*Icons rule*/
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
 
 body {
     background-color:var(--onyx);
@@ -29,6 +34,47 @@ h1{
     display:flex;
     flex-flow:column wrap;
     align-items:center;
+    justify-content:center;
+}
+
+#main-content{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+/*One or Two Player Choice Styling*/
+
+#choose-number-of-players{
+    display:none;
+    width:30vw;
+    justify-content:space-between;
+    color:#DDD;
+    font-size:2rem;
+    font-weight:100;
+}
+.player-choice-button{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    background-color:#666;
+    padding:2rem;
+    box-shadow:2px 2px 5px #222,
+                4px 4px 10px #444,
+                8px 10px 12px #222;
+    cursor:pointer;
+    transition:all 0.2s linear;
+
+}
+
+.player-choice-button:hover{
+    background-color:#777;
+}
+
+.player-choice-button > *{
+    margin-bottom:0;
+    margin-top:0;
+
 }
 
 /*Gameboard Styling*/
@@ -72,6 +118,7 @@ border-right:1px solid #666;
 /*Scores Section Styling*/
 #scores {
     display:flex;
+    width:30vw;
     font-size:3rem;
     justify-content:space-between;
     margin-top:2rem;
