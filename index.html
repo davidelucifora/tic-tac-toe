@@ -15,21 +15,43 @@
 <body>
     <div id="container">
         <header>
-            <h1>Tic Tac Toe</h1>
+            <h1 class="blue-text"><span class="orange-text">T</span>ic <span class="orange-text">T</span>ac <span class="orange-text">T</span>oe</h1>
+            
         </header>
     
     <div id="main-content">
-        <div id="choose-number-of-players">
-            <div id="choose-one-player" class="player-choice-button" data-selection="1">
-                <span class="material-icons md-48">computer</span>
+
+    <!--Player Selection-->
+        <div id="players-selection">
+            <div class="form-group">
+            <div id="choose-one-player" class="player-choice-button orange-text" data-selection="1">
+                <span class="material-icons md-48 ">computer</span>
                 <p>One Player</p>
+                <span class="small-text">click for random enemy</span>
             </div>
-            <div id="choose-two-players" class="player-choice-button" data-selection="2">
+            <div id="choose-two-players" class="player-choice-button blue-text" data-selection="2">
                 <span class="material-icons md-48">people</span>
                 <p>Two Players</p>
             </div>
         </div>
+            <h2 class="ui-title">Who's Playing?</h2>
+        <div id="choose-players-names">
+            <div class="form-group">
+                <label for="player-1-name-input" class="orange-text">Player 1:</label>
+                <input type="text" id="player-1-name-input" class="player-input orange-text" placeholder="e.g. Rick Sanchez">
+            </div>
+            <span class="vs">VS</span>
+            <div class="form-group">
+                <label id="player-two" for="player-2-name-input" class="blue-text">Player 2:</label>
+                <input type="text" id="player-2-name-input" class="player-input blue-text" placeholder="e.g. Morty Smith">
+             </div>
+             <button type="button" class="ui-btn" id="start-game-btn">Play!</button>
+        </div>
+        </div>
 
+        
+    <!--Player Selection-->
+    <!--Game Board-->
         <div id="gameboard" class="hide">
             <div class="cell" >x</div>
             <div class="cell vertical-cell " >o</div>
