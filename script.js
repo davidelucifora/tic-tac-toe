@@ -2,39 +2,122 @@
 const Player = (playerName, playerSign) => {
     const getPlayerName = () => playerName
     const getPlayerSign = () => playerSign
-    const getColor = () => {
-        if (getPlayerSign() === 'o') return 'orange'
-        else return 'blue'
-    }
-    return {getPlayerName, getPlayerSign, getColor}
+
+    return {getPlayerName, getPlayerSign}
 }
 
-
-
-const chooseNumberOfPlayers = (function(){
-
-        let numberOfPlayers
-
-        const choiceModule = document.getElementById('choose-number-of-players');
-        const onePlayerButton = document.getElementById('choose-one-player')
-        const twoPlayersButton = document.getElementById('choose-two-players')
-
+const playerSelection = (function(){
+        let numberOfPlayers 
+    //Dom Elements for Player Choice
+    const choiceModule = document.getElementById('choose-number-of-players');
+    const onePlayerButton = document.getElementById('choose-one-player');
+    const twoPlayersButton = document.getElementById('choose-two-players');
+    const playerOneInput = document.getElementById('player-1-name-input');
+    const playerTwoInput = document.getElementById('player-2-name-input');
+    const startGameButton = document.getElementById('start-game-btn');
+    const playerTwoLabel = document.getElementById('player-two')
+        
+    // Event Listeners
     onePlayerButton.addEventListener('click', selectPlayer);
     twoPlayersButton.addEventListener('click', selectPlayer)
+    startGameButton.addEventListener('click', startGame)
+
 
     function selectPlayer(e){
-        choiceModule.style.opacity = '0'
-        setTimeout(function(){choiceModule.remove()}, 400)
         e.stopPropagation()
-        numberOfPlayers = this.dataset.selection
+        //Assign Number of Players
+        numberOfPlayers = parseInt(this.dataset.selection)
+        numberOfPlayers === 1 ? choosePcPlayer() : chooseTwoPlayers();
         getNumberOfPlayers()
     }
 
-    const getNumberOfPlayers = () => numberOfPlayers
 
+    function choosePcPlayer() {
+        //Style Buttons
+        twoPlayersButton.classList.remove('choose-two-players-active')
+        twoPlayersButton.classList.add('blue-text')
+        onePlayerButton.classList.remove('orange-text')
+        onePlayerButton.classList.add(onePlayerButton.id + '-active')
+        
+        const randomEnemyArray = ["Abandoned Jerry", "Amish Cyborg", 
+            "Arcade Alien","Big-Head Morty",
+            "Birdperson","Buttmouth",
+            "Calypso",
+            "Coach Feratu",
+            "Dr. Glip-Glop",
+            "Duck with Muscles",
+            "Evil Beth Clone",
+            "Helium-Q",
+            "Hemorrhage",
+            "Hologram Rick",
+            "Jan-Michael Vincent",
+            "King Flippy Nips",
+            "Maximums Rickimus",
+            "Mr. Meeseeks",
+            "Mr. Poopybutthole",
+            "Pickle Rick",
+            "Reverse Giraffe",
+            "Schlami",
+            "Scroopy Noopers",
+            "Scropon",
+            "Scrotians",
+            "Shleemypants",
+            "Shmlamantha Shmlicelli",
+            "Shnoopy Bloopers",
+            "Shrimp Rick",
+            "Snuffles",
+            "Squanchy",
+            "Squeeb",
+            "Stealy",
+            "Talking Cat",
+            "Teacher Rick",
+            "Testicle Monster",
+            "Unity",
+            "Unmuscular Michaels"]
+                        
+        const randomEnemy = randomEnemyArray[Math.floor(Math.random() * randomEnemyArray.length)];
+            //Remove Input and Display Random CPU Enemy
+        playerTwoInput.style.display = 'none'
+        playerTwoLabel.innerText = randomEnemy
+        return randomEnemy
+
+    }
+    function chooseTwoPlayers(){
+        //Style Buttons
+        twoPlayersButton.classList.add(twoPlayersButton.id + '-active');
+        twoPlayersButton.classList.remove('blue-text');
+        onePlayerButton.classList.remove(onePlayerButton.id + '-active');
+        onePlayerButton.classList.add('orange-text');
+        //Restore Input
+        playerTwoLabel.textContent = 'Player 2'
+        playerTwoInput.style.display = 'flex'
+
+    }
+
+    function startGame(){
+        if (getNumberOfPlayers() === 1){
+            if (playerOneInput.value){
+            playerOneName = playerOneInput.value
+            playerTwoName = playerTwoLabel.textContent
+            const playerOne = Player(playerOneName, 'o')
+            const playerTwo = Player(playerTwoName, 'x')
+            
+        }
+        else alert('insert Name for Player one!')
+    }
+
+    }
+
+
+    //Getter Function for number of Players
+    const getNumberOfPlayers = () => numberOfPlayers
+    
+    //Return 1 or 2 depending on selection
     return {getNumberOfPlayers}
 
 })();
+
+
 
 const gameBoard = (function(){
     const boardArray = [
