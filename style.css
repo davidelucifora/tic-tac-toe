@@ -48,11 +48,10 @@ h1{
 }
 
 /*One or Two Player Choice Styling*/
-
-#choose-number-of-players{
+#players-selection{
     display:flex;
-    width:30vw;
-    justify-content:space-between;
+    flex-direction:column;
+    align-items:center;
     color:#DDD;
     font-size:2rem;
     font-weight:100;
@@ -62,27 +61,103 @@ h1{
 .player-choice-button{
     display:flex;
     flex-direction:column;
+    margin:0 2rem;
     align-items:center;
-    background-color:#666;
+    background-color:#333;
     padding:2rem;
     box-shadow:2px 2px 5px #222,
-                4px 4px 10px #444,
-                8px 10px 12px #222;
+                4px 4px 10px #444;
     cursor:pointer;
     transition:all 0.2s linear;
-
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+.choose-one-player-active{
+    background-color:var(--red-salsa);
+    color:black;
+}
+.choose-two-players-active{
+    background-color:var(--turquoise-blue);
+    color:black;
 }
 
-.player-choice-button:hover{
-    background-color:#777;
+.ui-btn{
+    background-color:var(--red-salsa);
+    color:white;
+    font-size:1.2rem;
+    font-family: 'Kanit';
+    font-weight:400;
+    padding:0.5rem 2.5rem;
+    margin-left:2rem;
+    cursor:pointer;
+    border:none;
+    box-shadow:2px 2px 5px #222,
+                4px 4px 10px #444;
+    transition: all linear 0.2s;
 }
 
+.ui-btn:hover{
+    background-color:var(--turquoise-blue);
+    color:var(--onyx);
+}
+
+#choose-one-player:hover{
+    background-color:var(--red-salsa);
+    color:black;
+}
+#choose-two-players:hover{
+    background-color:var(--turquoise-blue);
+    color:black;
+}
 .player-choice-button > *{
     margin-bottom:0;
     margin-top:0;
-
 }
 
+input:focus{
+    outline:none;
+}
+
+/*Player Name Input Styling*/
+#choose-players-names{
+    display:flex;
+    justify-content:center;
+    width:80vw;
+}
+.small-text{
+    font-size:1.2rem;
+}
+
+#choose-players-names label{
+    font-size:2rem;
+    font-weight:300;
+    margin:0 1rem;
+}
+
+.form-group{
+    display:flex;
+    align-items:space-evenly;
+}
+
+.vs {
+    margin:0 3rem;
+}
+.player-input{
+    border:none;
+    background-color:#333;
+    height:1rem;
+    padding:1rem;
+    font-size:1.5rem;
+    color:#DDD;
+}
+
+.ui-title{
+    font-size:3rem;
+    font-weight:100;
+    color:#DDD;
+    align-self:center;
+}
 /*Gameboard Styling*/
 #gameboard{
     
@@ -133,7 +208,7 @@ border-right:1px solid #666;
 }
 
 .orange-text{
-color:var(--indian-yellow);
+color:var(--red-salsa);
 }
 .blue-text{
     color:var(--turquoise-blue);
