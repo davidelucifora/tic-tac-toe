@@ -15,7 +15,7 @@
 <body>
     <div id="container">
         <header>
-            <h1 class="blue-text"><span class="orange-text">T</span>ic <span class="orange-text">T</span>ac <span class="orange-text">T</span>oe</h1>
+            <h1 id="title" class="blue-text"><span class="orange-text">T</span>ic <span class="orange-text">T</span>ac <span class="orange-text">T</span>oe</h1>
             
         </header>
     
@@ -29,7 +29,7 @@
                 <p>One Player</p>
                 <span class="small-text">click for random enemy</span>
             </div>
-            <div id="choose-two-players" class="player-choice-button blue-text" data-selection="2">
+            <div id="choose-two-players" class="player-choice-button choose-two-players-active" data-selection="2">
                 <span class="material-icons md-48">people</span>
                 <p>Two Players</p>
             </div>
@@ -63,6 +63,13 @@
             <div class="cell vertical-cell" >o</div>
             <div class="cell" >x</div>
         </div>
+        <div id="end-game-div">
+            <h3 class="ui-title">Congratulations! <span id="winner"></span> wins!</h3>
+            <div class=form-group>
+            <button id ="rematch-btn"class="ui-btn">Rematch?</button>
+            <button id ="main-menu-btn"class="ui-btn">Main Menu</button>
+        </div>
+       </div>
         <div id="scores">
                 <div class="player-name orange-text"> <p id="player-1-name">Player 1</p>
                     <span id="player-1-score" class="score-count">0</span>

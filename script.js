@@ -6,8 +6,10 @@ const Player = (playerName, playerSign) => {
     return {getPlayerName, getPlayerSign, getPlayerScore}
 }
 
+
+
 const playerSelection = (function(){
-        let numberOfPlayers
+        let numberOfPlayers = 2
         let playerOneName = ''
         let playerTwoName = ''
 
@@ -140,7 +142,7 @@ function startGame(){
     const getPlayer1Sign = () => player1.getPlayerSign()
     const getPlayer2Sign = () => player2.getPlayerSign()
     
-    return {getNumberOfPlayers, getPlayer1Name, getPlayer2Name, getPlayer1Sign, getPlayer2Sign}
+    return {getNumberOfPlayers, getPlayer1Name, getPlayer2Name, getPlayer1Sign, getPlayer2Sign, playerSelectionDiv}
 
 })();
 
@@ -150,21 +152,23 @@ const gameBoard = (function(){
         '', '', '',
         '', '', ''];
 
-    const domElements =  {
-        cells: [...document.querySelectorAll('.cell')]
-    }
+
+        const cells = [...document.querySelectorAll('.cell')]
+
+
+    const gameBoardDiv = document.getElementById('gameboard');
+    const scoresDiv = document.getElementById('scores');
+    const endGameDiv = document.getElementById('end-game-div')
 
     let lastPlayer = 2
     let player1Score = 0
     let player2Score = 0
 
-    domElements.cells.forEach(cell => {
+    cells.forEach(cell => {
         cell.addEventListener('click', addSignToBoard)
     })
 
     function appear(){
-        const gameBoardDiv = document.getElementById('gameboard');
-        const scoresDiv = document.getElementById('scores');
         animations.fadeIn(gameBoardDiv, 'grid', '30rem')
         animations.fadeIn(scoresDiv, 'flex')
         gameBoard.renderBoard()
@@ -192,7 +196,6 @@ const gameBoard = (function(){
         }
         lastPlayer === 2 ? lastPlayer = 1 : lastPlayer = 2
         renderBoard()
-
     }
 }
 
@@ -217,7 +220,7 @@ const gameBoard = (function(){
 
     function populateBoard() {
         let index = 0
-        domElements.cells.forEach(cell => {
+        cells.forEach(cell => {
             //Assign unique incremental ID
             cell.dataset.number = index;
             //Display sign from boardArray to cell.
@@ -242,13 +245,53 @@ winningCombos.forEach(combo => {
     if (index === 3) {
         animations.highlightWinningRow(combo, lastPlayer)
         if (lastPlayer === 1) {
-            player1Score++            
+            player1Score++
+
         }
         else{
             player2Score++
         }
+    setTimeout(function(){endGame(lastPlayer)},2000)
     }
 });
+}
+
+function endGame(lastPlayer){
+
+    animations.fadeOut(gameBoardDiv)
+    animations.fadeOut(scoresDiv)
+    setTimeout(function(){
+        animations.fadeIn(endGameDiv, 'flex', '30vh')
+        animations.fadeIn(scoresDiv, 'flex')},600)
+    const winnerSpan = document.getElementById('winner')
+    const rematchBtn = document.getElementById('rematch-btn')
+    const mainMenuBtn = document.getElementById('main-menu-btn')
+    winnerSpan.textContent = `${lastPlayer === 1 ? player1.getPlayerName() : player2.getPlayerName()}`
+    
+    rematchBtn.addEventListener('click', rematch)
+    mainMenuBtn.addEventListener('click', goToMainMenu)
+}
+
+function rematch(){
+    clearEndGameDiv()
+    setTimeout(function(){appear()},600)
+
+}
+
+function goToMainMenu(){
+    clearEndGameDiv()
+    player1Score = 0
+    player2Score = 0
+    const mainMenu = playerSelection.playerSelectionDiv
+    setTimeout(function(){
+        animations.fadeIn(mainMenu, 'flex')
+},600)
+}
+
+function clearEndGameDiv(){
+    boardArray.length = 0
+    animations.fadeOut(endGameDiv)
+    animations.fadeOut(scoresDiv)
 }
 
 
@@ -330,6 +373,7 @@ function highlightWinningRow(combo, lastPlayer){
     }
 return {fadeOut, fadeIn, inputError, takenCellError, highlightWinningRow}
 })()
+
 
 // Choose between one player or two player
 
