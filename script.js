@@ -2,7 +2,8 @@
 const Player = (playerName, playerSign) => {
     const getPlayerName = () => playerName
     const getPlayerSign = () => playerSign
-    return {getPlayerName, getPlayerSign}
+    const getPlayerScore = () => 0 
+    return {getPlayerName, getPlayerSign, getPlayerScore}
 }
 
 const playerSelection = (function(){
@@ -115,17 +116,21 @@ const playerSelection = (function(){
             if (!playerTwoInput.value) animations.inputError(playerTwoInput)
             else playerTwoName = playerTwoInput.value  
         return true
-        
         default:
-            startGameButton.textContent = 'Select Number of Players'
+
+        return false
     }
 }
 function startGame(){
     if (assignPlayersNames()){
-    player1 = Player(playerOneName, 'o')
-    player2 = Player(playerTwoName, 'x')
-    animations.fadeOut(playerSelectionDiv)
-    setTimeout(function(){gameBoard.appear()}, 400) 
+        player1 = Player(playerOneName, 'o')
+        player2 = Player(playerTwoName, 'x')
+        animations.fadeOut(playerSelectionDiv)
+        setTimeout(function(){gameBoard.appear()}, 400) 
+    }
+    else {
+        startGameButton.textContent = 'Select number of Players'
+        setTimeout(function(){startGameButton.textContent = 'Play!'},800)
     }
 }
     //Getter Functions
@@ -150,6 +155,8 @@ const gameBoard = (function(){
     }
 
     let lastPlayer = 2
+    let player1Score = 0
+    let player2Score = 0
 
     domElements.cells.forEach(cell => {
         cell.addEventListener('click', addSignToBoard)
@@ -181,27 +188,31 @@ const gameBoard = (function(){
                 boardArray[currentCellNumber] = player2.getPlayerSign()
                 e.target.style.color = 'var(--turquoise-blue)'
             break
+            
         }
+        lastPlayer === 2 ? lastPlayer = 1 : lastPlayer = 2
         renderBoard()
-        switchTurn()
 
     }
 }
 
     function checkTurn(){ 
-        if (lastPlayer === 2)  return 1
-        else return 2
-    }
-
-    function switchTurn(){
-
-        if (lastPlayer === 2) lastPlayer  = 1
-        else lastPlayer = 2
+        if (lastPlayer === 2)  {
+            scoreBoard.playerTwoNameDisplay.style.borderBottom = 'none'
+            scoreBoard.playerOneNameDisplay.style.borderBottom = '1px solid var(--red-salsa)'
+            return 1}
+        else {
+            scoreBoard.playerOneNameDisplay.style.borderBottom = 'none'
+            scoreBoard.playerTwoNameDisplay.style.borderBottom = '1px solid var(--turquoise-blue)'
+            return 2}
     }
 
 
     function renderBoard() {
+        checkTurn()
         populateBoard()
+        checkWin(lastPlayer)
+        scoreBoard.updateScores()
     }
 
     function populateBoard() {
@@ -211,26 +222,63 @@ const gameBoard = (function(){
             cell.dataset.number = index;
             //Display sign from boardArray to cell.
             cell.textContent = boardArray[index]
-            
             index++;
         })
     }
 
 
-    return {appear, renderBoard}
+
+function checkWin(lastPlayer) {
+const winningCombos = ['012', '345', '678', '048', '036', '147', '258', '246']
+    let sign
+lastPlayer === 1 ? sign = 'o' : sign = 'x'
+
+winningCombos.forEach(combo => {
+    let index = 0
+    combo.split('').forEach(cell => {
+        cell = parseInt(cell)
+    if (sign === boardArray[cell]) index++
+    });
+    if (index === 3) {
+        animations.highlightWinningRow(combo, lastPlayer)
+        if (lastPlayer === 1) {
+            player1Score++            
+        }
+        else{
+            player2Score++
+        }
+    }
+});
+}
+
+
+    const getPlayer1Score = () => player1Score
+    const getPlayer2Score = () => player2Score
+
+
+    return {appear, renderBoard, getPlayer1Score, getPlayer2Score}
     
 })();
 
 const scoreBoard = (function(){
 
-    function updateDisplayNames(){
     const playerOneNameDisplay = document.getElementById('player-1-name')
     const playerTwoNameDisplay = document.getElementById('player-2-name')
+    const playerOneScoreDisplay = document.getElementById('player-1-score');
+    const playerTwoScoreDisplay = document.getElementById('player-2-score');
+    
+    function updateDisplayNames(){
     playerOneNameDisplay.textContent = playerSelection.getPlayer1Name()
     playerTwoNameDisplay.textContent = playerSelection.getPlayer2Name()
 }
 
-    return {updateDisplayNames}
+    function updateScores(){
+        playerOneScoreDisplay.textContent = gameBoard.getPlayer1Score()
+        playerTwoScoreDisplay.textContent = gameBoard.getPlayer2Score()
+
+    }
+
+    return {updateDisplayNames, updateScores, playerOneNameDisplay, playerTwoNameDisplay}
 })()
 
 //Animations module
@@ -242,6 +290,26 @@ const animations = (function(){
         setTimeout(function(){element.style.display = 'none'}, 300)
     }
     
+function highlightWinningRow(combo, lastPlayer){
+    let color = ''
+    lastPlayer === 1 ? color = 'var(--red-salsa)' : color = 'var(--turquoise-blue)' 
+    combo.split('').forEach(cell => {
+        const domCell = document.querySelector(`[data-number='${cell}']`)
+        let i = 0
+        let blink = setInterval(function(){
+            if (i === 2) clearInterval(blink)
+        domCell.style.backgroundColor = color
+        domCell.style.color = '#666'
+        setTimeout(function(){
+            domCell.style.backgroundColor = '';
+            domCell.style.color = color
+        },250)
+    i++   
+    console.log(i)
+    },500)
+    });
+}
+
     function fadeIn(element, display, height){
         element.style.display = display || 'block'
         setTimeout(function(){element.style.opacity = '1'
@@ -255,12 +323,12 @@ const animations = (function(){
 }
 
     function takenCellError(cell, value){
-        cell.textContent = '🧐';
+        cell.textContent = '🧐  ';
         setTimeout(function(){
             cell.textContent = value
         }, 500)
     }
-return {fadeOut, fadeIn, inputError, takenCellError}
+return {fadeOut, fadeIn, inputError, takenCellError, highlightWinningRow}
 })()
 
 // Choose between one player or two player
@@ -270,3 +338,4 @@ return {fadeOut, fadeIn, inputError, takenCellError}
 // WHEN HE CLICKS TO A CELL WITH A CERTAIN ID, WE GET THE NUMBER OF THAT CELL AND PLACE THAT SIGN IN THE ARRAY POSITION
 // WE THEN LOCK THE CELL AND MAKE IT UNCLICKABLE AGAIN. 
 // 
+
