@@ -2,7 +2,6 @@
 const Player = (playerName, playerSign) => {
     const getPlayerName = () => playerName
     const getPlayerSign = () => playerSign
-
     return {getPlayerName, getPlayerSign}
 }
 
@@ -25,13 +24,12 @@ const playerSelection = (function(){
     twoPlayersButton.addEventListener('click', selectPlayer)
     startGameButton.addEventListener('click', startGame)
 
-    function startGame(){}
-
     function selectPlayer(e){
         e.stopPropagation()
         //Assign Number of Players
         numberOfPlayers = parseInt(this.dataset.selection)
         numberOfPlayers === 1 ? choosePcPlayer() : chooseTwoPlayers();
+        return numberOfPlayers
     }
 
     //When Selecting One Player vs PC
@@ -83,7 +81,6 @@ const playerSelection = (function(){
             //Remove Input and Display Random CPU Enemy
         playerTwoInput.style.display = 'none'
         playerTwoLabel.innerText = randomEnemy
-        return randomEnemy
     }
     //When Selecting 2 Players
     function chooseTwoPlayers(){
@@ -98,48 +95,47 @@ const playerSelection = (function(){
     }
 
     function assignPlayersNames(){
-        if (playerOneInput.value){
-            playerOneName = playerOneInput.value
         
-            if (getNumberOfPlayers() === 1){
-                playerTwoName = playerTwoLabel.textContent   
-            }
-            else if (getNumberOfPlayers() === 2){
-                if (!playerTwoInput.value) {
-                    playerTwoInput.style.border = '1px solid var(--red-salsa)'
-                    setTimeout(function(){playerTwoInput.style.border = 'none'}, 2000)
-                }
-                playerTwoName = playerTwoInput.value
-            }
-            else {
-                startGameButton.textContent = 'Choose number of Players!'
-                setTimeout(function(){
-                    startGameButton.textContent = 'Play'}, 1000)
-    }
-        }
-        else {
-            playerOneInput.style.border = '1px solid var(--red-salsa)'
-            setTimeout(function(){
-                playerOneInput.style.border = 'none'}, 2000)
-}
-        
-    }
+        //Make sure player name was inserted
 
+        if (!playerOneInput.value) {
+            animations.inputError(playerOneInput)
+            return false
+        }   
+        else playerOneName = playerOneInput.value
+
+        //Check number of Players Selection
+    switch (getNumberOfPlayers()){
+
+        case 1:
+            playerTwoName = playerTwoLabel.textContent
+        return true
+        
+        case 2:
+            if (!playerTwoInput.value) animations.inputError(playerTwoInput)
+            else playerTwoName = playerTwoInput.value  
+        return true
+        
+        default:
+            startGameButton.textContent = 'Select Number of Players'
+    }
+}
 function startGame(){
-    assignPlayersNames()
+    if (assignPlayersNames()){
+    player1 = Player(playerOneName, 'o')
+    player2 = Player(playerTwoName, 'x')
     animations.fadeOut(playerSelectionDiv)
     setTimeout(function(){gameBoard.appear()}, 400) 
-    
+    }
 }
-
-const getPlayerOneName = () => playerOneName
-const getPlayerTwoName = () => playerTwoName
-
-    //Getter Function for number of Players
+    //Getter Functions
     const getNumberOfPlayers = () => numberOfPlayers
+    const getPlayer1Name = () => player1.getPlayerName()
+    const getPlayer2Name = () => player2.getPlayerName()
+    const getPlayer1Sign = () => player1.getPlayerSign()
+    const getPlayer2Sign = () => player2.getPlayerSign()
     
-    //Return 1 or 2 depending on selection
-    return {getNumberOfPlayers, getPlayerOneName, getPlayerTwoName}
+    return {getNumberOfPlayers, getPlayer1Name, getPlayer2Name, getPlayer1Sign, getPlayer2Sign}
 
 })();
 
@@ -153,13 +149,56 @@ const gameBoard = (function(){
         cells: [...document.querySelectorAll('.cell')]
     }
 
+    let lastPlayer = 2
+
+    domElements.cells.forEach(cell => {
+        cell.addEventListener('click', addSignToBoard)
+    })
+
     function appear(){
         const gameBoardDiv = document.getElementById('gameboard');
         const scoresDiv = document.getElementById('scores');
         animations.fadeIn(gameBoardDiv, 'grid', '30rem')
         animations.fadeIn(scoresDiv, 'flex')
         gameBoard.renderBoard()
+        scoreBoard.updateDisplayNames()
     }
+
+    function addSignToBoard(e){
+        const currentCell = e.target
+        const currentCellNumber = currentCell.dataset.number
+        if (currentCell.textContent) {
+            animations.takenCellError(currentCell, currentCell.textContent)
+        }
+        else{
+        switch (checkTurn()){
+            case 1:
+                boardArray[currentCellNumber] = player1.getPlayerSign()
+                e.target.style.color = 'var(--red-salsa)'
+            break
+
+            case 2:
+                boardArray[currentCellNumber] = player2.getPlayerSign()
+                e.target.style.color = 'var(--turquoise-blue)'
+            break
+        }
+        renderBoard()
+        switchTurn()
+
+    }
+}
+
+    function checkTurn(){ 
+        if (lastPlayer === 2)  return 1
+        else return 2
+    }
+
+    function switchTurn(){
+
+        if (lastPlayer === 2) lastPlayer  = 1
+        else lastPlayer = 2
+    }
+
 
     function renderBoard() {
         populateBoard()
@@ -169,23 +208,32 @@ const gameBoard = (function(){
         let index = 0
         domElements.cells.forEach(cell => {
             //Assign unique incremental ID
-            cell.id = 'cell-' + index;
+            cell.dataset.number = index;
             //Display sign from boardArray to cell.
             cell.textContent = boardArray[index]
-            styleCell(cell)
+            
             index++;
         })
     }
 
-    function styleCell(cell) {
-        //Changes color based on cell content
-        if (cell.textContent === 'o') cell.classList.add('orange-text')
-        else cell.classList.add('blue-text');
 
-    }
     return {appear, renderBoard}
+    
 })();
 
+const scoreBoard = (function(){
+
+    function updateDisplayNames(){
+    const playerOneNameDisplay = document.getElementById('player-1-name')
+    const playerTwoNameDisplay = document.getElementById('player-2-name')
+    playerOneNameDisplay.textContent = playerSelection.getPlayer1Name()
+    playerTwoNameDisplay.textContent = playerSelection.getPlayer2Name()
+}
+
+    return {updateDisplayNames}
+})()
+
+//Animations module
 const animations = (function(){
     function fadeOut(element){
         element.style.opacity = '1'
@@ -198,15 +246,26 @@ const animations = (function(){
         element.style.display = display || 'block'
         setTimeout(function(){element.style.opacity = '1'
         element.style.height = height || 'auto';}, 50)
-        
-
+    
     }
-    return {fadeOut, fadeIn}
+    function inputError(element){
+    element.style.border = '1px solid var(--red-salsa)';
+    setTimeout(function(){
+        element.style.border = 'none'}, 2000)
+}
+
+    function takenCellError(cell, value){
+        cell.textContent = '🧐';
+        setTimeout(function(){
+            cell.textContent = value
+        }, 500)
+    }
+return {fadeOut, fadeIn, inputError, takenCellError}
 })()
 
 // Choose between one player or two player
 
-// OK FIRST WE NEED TO GET THE PLAYER TO CHOOSE HIS NAME AND SIGN. THIS WILL ASSIGN HIM A COLOR.
+
 // THEN THE BOARD WILL APPEAR, THE PLAYER WILL PUT HIS MARK SOMEWHERE WHICH MEANS:
 // WHEN HE CLICKS TO A CELL WITH A CERTAIN ID, WE GET THE NUMBER OF THAT CELL AND PLACE THAT SIGN IN THE ARRAY POSITION
 // WE THEN LOCK THE CELL AND MAKE IT UNCLICKABLE AGAIN. 
