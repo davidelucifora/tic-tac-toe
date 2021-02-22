@@ -104,6 +104,7 @@ const playerSelection = (function(){
         if (!playerOneInput.value) {
             animations.inputError(playerOneInput)
             return false
+
         }   
         else playerOneName = playerOneInput.value
 
@@ -112,14 +113,16 @@ const playerSelection = (function(){
 
         case 1:
             playerTwoName = playerTwoLabel.textContent
-        return true
+
         
         case 2:
-            if (!playerTwoInput.value) animations.inputError(playerTwoInput)
+            if (!playerTwoInput.value) {
+                animations.inputError(playerTwoInput)
+            return false}
             else playerTwoName = playerTwoInput.value  
         return true
-        default:
 
+        default:
         return false
     }
 }
@@ -132,7 +135,7 @@ function startGame(){
     }
     else {
         startGameButton.textContent = 'Select number of Players'
-        setTimeout(function(){startGameButton.textContent = 'Play!'},800)
+        setTimeout(function(){startGameButton.textContent = 'Play!'},1000)
     }
 }
     //Getter Functions

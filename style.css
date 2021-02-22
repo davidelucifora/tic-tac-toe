@@ -31,6 +31,10 @@ h1{
     color: #DDD;
 }
 
+header a {
+    text-decoration:none;
+    color:var(--turquoise-blue)
+}
 
 #container{
     display:flex;
