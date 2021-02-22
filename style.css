@@ -189,6 +189,8 @@ input:focus{
     cursor:pointer;
     transition: all 0.2s linear;
     font-weight:100;
+    min-width:10rem;
+    min-height:10rem;
 }
 .cell:hover{
     background-color:#999;
@@ -208,13 +210,28 @@ border-right:1px solid #999;
 #scores {
     opacity: 0;
     display:none;
-    width:30vw;
+    min-width:50vw;
     font-size:3rem;
     justify-content:space-between;
     margin-top:2rem;
     color:#DDD;
     font-weight:200;
     transition: all 1s linear;
+}
+
+.player-name{
+    display:flex;
+    height:auto;
+    align-items:center;
+    justify-content:space-between;
+    padding:0;
+    
+}
+
+.score-count{
+    margin-left:2rem;
+    color:white;
+    font-weight:100;
 }
 
 .orange-text{
