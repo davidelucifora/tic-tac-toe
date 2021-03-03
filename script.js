@@ -41,6 +41,8 @@ const DOM = (function(){
 const playerSelection = (function(){
 
     let numberOfPlayers = 2 //Two Players selected by Default
+    let player1
+    let player2
         
     //Event Listeners
     DOM.onePlayerBtn.addEventListener('click', selectNumberOfPlayers);
@@ -63,7 +65,8 @@ const playerSelection = (function(){
             //Display Random Enemy Name
             assignRandomEnemyName()
             DOM.player2NameInput.style.display = 'none'
-            DOM.player2Label.textContent = assignRandomEnemyName()
+            const player2Name = assignRandomEnemyName()
+            DOM.player2Label.textContent = player2Name
             
         }
         else {
@@ -76,10 +79,8 @@ const playerSelection = (function(){
             DOM.player2Label.textContent = 'Player 2'
             DOM.player2NameInput.style.display = 'flex'
         }
-
     }
 function assignRandomEnemyName(){
-    console.log('runnign?')
         //Assigns name from Random Rick and Morty Character to PC
         const randomEnemyArray = ["Abandoned Jerry", "Amish Cyborg", 
             "Arcade Alien","Big-Head Morty",
@@ -118,85 +119,72 @@ function assignRandomEnemyName(){
             "Unmuscular Michaels"]
         return randomEnemy = randomEnemyArray[Math.floor(Math.random() * randomEnemyArray.length)];
        }
-//     //When Selecting 2 Players
-//     function chooseTwoPlayers(){
-//         //Style Buttons
-//         DOM.twoPlayersBtn.classList.add(DOM.twoPlayersBtn.id + '-active');
-//         DOM.twoPlayersBtn.classList.remove('blue-text');
-//         onePlayerButton.classList.remove(onePlayerButton.id + '-active');
-//         onePlayerButton.classList.add('orange-text');
-//         //Restore Input
-//         playerTwoLabel.textContent = 'Player 2'
-//         playerTwoInput.style.display = 'flex'
-//     }
-function chooseTwoPlayers(){}
 
-    function startGame(){}
-//     function assignPlayersNames(){
 
-//         if (!playerOneInput.value){
-//             animations.inputError(playerOneInput)
-//             return false
-//         }
-//         else {
-//             playerOneName = playerOneInput.value;
-//             if (numberOfPlayers === 1){
-//                 playerTwoName = playerTwoLabel.textContent
-//                 return true
-//             }
-//             else if (numberOfPlayers === 2){
-//                 if (!playerTwoInput.value) {
-//                     animations.inputError(playerTwoInput)
-//                 return false}
-//                 else {
-//                     playerTwoName = playerTwoInput.value
-//                     return true;
-//                 }
-//             }
-//             else {
-//                 startGameButton.textContent = 'Select Number of Players'
-//                 setTimeout(function(){startGameButton.textContent = 'Play!'}, 1000)
-//                 return false
-//             }
-//         }
-// }
-// function startGame(){
-//         if (assignPlayersNames()){
-//         player1 = Player(playerOneName, 'o')
-//         player2 = Player(playerTwoName, 'x')
-//         animations.fadeOut(playerSelectionDiv)
-//         setTimeout(function(){gameBoard.appear()}, 400)
 
-//         // startGameButton.textContent = 'Select number of Players'
-//         setTimeout(function(){startGameButton.textContent = 'Play!'},1000)
-//         }
-// }
-//     //Getter Functions
-//     const getNumberOfPlayers = () => numberOfPlayers
-//     const getPlayer1Name = () => player1.getPlayerName()
-//     const getPlayer2Name = () => player2.getPlayerName()
-//     const getPlayer1Sign = () => player1.getPlayerSign()
-//     const getPlayer2Sign = () => player2.getPlayerSign()
-    
-//     return {getNumberOfPlayers, getPlayer1Name, getPlayer2Name, getPlayer1Sign, getPlayer2Sign, playerSelectionDiv, assignPlayersNames}
+    //Check for Input and return chosen player names 
+    function checkInput(){
+        let player1Name
+        let player2Name
 
+        if (!DOM.player1NameInput.value) {
+            animations.inputError(DOM.player1NameInput)
+            return false
+        }
+        
+        else {
+            player1Name = DOM.player1NameInput.value
+            if (numberOfPlayers == 2) {
+
+                if (!DOM.player2NameInput.value) {
+                    animations.inputError(DOM.player2NameInput)
+                    return false}
+
+                else {
+                    player2Name = DOM.player2NameInput.value
+                }
+            }
+            else player2Name = DOM.player2Label.textContent   
+        }
+        return {player1Name, player2Name}
+    }
+
+    function startGame(){
+        if (checkInput()){
+            player1Name = checkInput().player1Name
+            player2Name = checkInput().player2Name
+            player1 = Player(player1Name, 'x')
+            player2 = Player(player2Name, 'o')
+            animations.fadeOut(DOM.playerSelectionDiv)
+            setTimeout(function(){gameBoard.init()},500)
+        }
+    }
+
+    const getNumberOfPlayers = () => numberOfPlayers
+    const getPlayer1 = () => player1
+    const getPlayer2 = () => player2  
+
+    return {getPlayer1, getPlayer2, getNumberOfPlayers}
 })();
 
-// const gameBoard = (function(){
-//     let boardArray = [
-//         '', '', '', 
-//         '', '', '',
-//         '', '', ''];
+const gameBoard = (function(){
 
 
-//         const cells = [...document.querySelectorAll('.cell')]
+    let boardArray = [
+        '', '', '', 
+        '', '', '',
+        '', '', ''];
 
+function init() {
+    animations.fadeIn(DOM.gameBoardDiv, 'grid', '30rem')
+    animations.fadeIn(DOM.scoresDiv, 'flex')
+    renderBoard()
+    scoreBoard.updateDisplayNames()
+}
 
-//     const gameBoardDiv = document.getElementById('gameboard');
-//     const scoresDiv = document.getElementById('scores');
-//     const endGameDiv = document.getElementById('end-game-div')
-
-//     let lastPlayer = 2
+return {init}
+})()
+        //     let lastPlayer = 2
 //     let player1Score = 0
 //     let player2Score = 0
 
@@ -401,56 +389,56 @@ function chooseTwoPlayers(){}
 //     }
 
 //     return {updateDisplayNames, updateScores, playerOneNameDisplay, playerTwoNameDisplay}
-// })()
 
-// //Animations module
-// const animations = (function(){
-//     function fadeOut(element){
-//         element.style.opacity = '1'
-//         element.style.transition = 'all linear 0.2s'
-//         element.style.opacity = '0'
-//         setTimeout(function(){element.style.display = 'none'}, 300)
-//     }
+
+//Animations module
+const animations = (function(){
+    function fadeOut(element){
+        element.style.opacity = '1'
+        element.style.transition = 'all linear 0.2s'
+        element.style.opacity = '0'
+        setTimeout(function(){element.style.display = 'none'}, 300)
+    }
     
-// function highlightWinningRow(combo, lastPlayer){
-//     let color = ''
-//     lastPlayer === 1 ? color = 'var(--red-salsa)' : color = 'var(--turquoise-blue)' 
-//     combo.split('').forEach(cell => {
-//         const domCell = document.querySelector(`[data-number='${cell}']`)
-//         let i = 0
-//         let blink = setInterval(function(){
-//             if (i === 2) clearInterval(blink)
-//         domCell.style.backgroundColor = color
-//         domCell.style.color = '#666'
-//         setTimeout(function(){
-//             domCell.style.backgroundColor = '';
-//             domCell.style.color = color
-//         },250)
-//     i++   
-//     },500)
-//     });
-// }
+function highlightWinningRow(combo, lastPlayer){
+    let color = ''
+    lastPlayer === 1 ? color = 'var(--red-salsa)' : color = 'var(--turquoise-blue)' 
+    combo.split('').forEach(cell => {
+        const domCell = document.querySelector(`[data-number='${cell}']`)
+        let i = 0
+        let blink = setInterval(function(){
+            if (i === 2) clearInterval(blink)
+        domCell.style.backgroundColor = color
+        domCell.style.color = '#666'
+        setTimeout(function(){
+            domCell.style.backgroundColor = '';
+            domCell.style.color = color
+        },250)
+    i++   
+    },500)
+    });
+}
 
-//     function fadeIn(element, display, height){
-//         element.style.display = display || 'block'
-//         setTimeout(function(){element.style.opacity = '1'
-//         element.style.height = height || 'auto';}, 50)
+    function fadeIn(element, display, height){
+        element.style.display = display || 'block'
+        setTimeout(function(){element.style.opacity = '1'
+        element.style.height = height || 'auto';}, 50)
     
-//     }
-//     function inputError(element){
-//     element.style.border = '1px solid var(--red-salsa)';
-//     setTimeout(function(){
-//         element.style.border = 'none'}, 2000)
-// }
+    }
+    function inputError(element){
+    element.style.border = '1px solid var(--red-salsa)';
+    setTimeout(function(){
+        element.style.border = 'none'}, 2000)
+}
 
-//     function takenCellError(cell, value){
-//         cell.textContent = '🧐  ';
-//         setTimeout(function(){
-//             cell.textContent = value
-//         }, 500)
-//     }
-// return {fadeOut, fadeIn, inputError, takenCellError, highlightWinningRow}
-// })()
+    function takenCellError(cell, value){
+        cell.textContent = '🧐  ';
+        setTimeout(function(){
+            cell.textContent = value
+        }, 500)
+    }
+return {fadeOut, fadeIn, inputError, takenCellError, highlightWinningRow}
+})()
 
 
 // Choose between one player or two player
