@@ -7,6 +7,7 @@ const Player = (playerName, playerSign) => {
     return {getPlayerName, getPlayerSign, getPlayerScore, getPlayerColor}
 }
 
+//Caching DOM Elements
 const DOM = (function(){
     return {
         //Player Selection Screen Elements:
@@ -36,8 +37,7 @@ const DOM = (function(){
     }
 })()
 
-//Player selection module. It should be very simple: Click 1p or 2p. Update form accordingly, click start. Get Input. Init Board.
-
+//Player selection module. Takes input on Number of Players, Player Names and Inits the Game board if input is correct.
 const playerSelection = (function(){
 
     let numberOfPlayers = 2 //Two Players selected by Default
@@ -51,24 +51,26 @@ const playerSelection = (function(){
 
     function selectNumberOfPlayers(e){
         e.stopPropagation()
-        numberOfPlayers = this.dataset.selection 
+        numberOfPlayers = parseInt(this.dataset.selection) 
         choosePlayersNames()
     }
 
     function choosePlayersNames(){
-        if (numberOfPlayers == 1){
+
+        //When Selecting 1 Player
+        if (numberOfPlayers === 1){
             //Style Buttons
             DOM.twoPlayersBtn.classList.remove('choose-two-players-active')
             DOM.twoPlayersBtn.classList.add('blue-text')
             DOM.onePlayerBtn.classList.remove('orange-text')
             DOM.onePlayerBtn.classList.add(DOM.onePlayerBtn.id + '-active')
-            //Display Random Enemy Name
+            //Assign and Display Random Enemy Name to PC
             assignRandomEnemyName()
             DOM.player2NameInput.style.display = 'none'
-            const player2Name = assignRandomEnemyName()
-            DOM.player2Label.textContent = player2Name
+            DOM.player2Label.textContent = assignRandomEnemyName()
             
         }
+        //When Selecting 2 Players
         else {
             //Style Buttons
             DOM.twoPlayersBtn.classList.add(DOM.twoPlayersBtn.id + '-active');
@@ -80,7 +82,8 @@ const playerSelection = (function(){
             DOM.player2NameInput.style.display = 'flex'
         }
     }
-function assignRandomEnemyName(){
+
+    function assignRandomEnemyName(){
         //Assigns name from Random Rick and Morty Character to PC
         const randomEnemyArray = ["Abandoned Jerry", "Amish Cyborg", 
             "Arcade Alien","Big-Head Morty",
@@ -122,6 +125,18 @@ function assignRandomEnemyName(){
 
 
 
+    function startGame(){
+        //If all required Input is there, Create Players and Init Board
+        if (checkInput()){
+            player1Name = checkInput().player1Name
+            player2Name = checkInput().player2Name
+            player1 = Player(player1Name, 'x')
+            player2 = Player(player2Name, 'o')
+            animations.fadeOut(DOM.playerSelectionDiv)
+            setTimeout(function(){gameBoard.init()},500)
+        }
+    }
+
     //Check for Input and return chosen player names 
     function checkInput(){
         let player1Name
@@ -134,7 +149,7 @@ function assignRandomEnemyName(){
         
         else {
             player1Name = DOM.player1NameInput.value
-            if (numberOfPlayers == 2) {
+            if (numberOfPlayers === 2) {
 
                 if (!DOM.player2NameInput.value) {
                     animations.inputError(DOM.player2NameInput)
@@ -149,17 +164,7 @@ function assignRandomEnemyName(){
         return {player1Name, player2Name}
     }
 
-    function startGame(){
-        if (checkInput()){
-            player1Name = checkInput().player1Name
-            player2Name = checkInput().player2Name
-            player1 = Player(player1Name, 'x')
-            player2 = Player(player2Name, 'o')
-            animations.fadeOut(DOM.playerSelectionDiv)
-            setTimeout(function(){gameBoard.init()},500)
-        }
-    }
-
+    //Getter Functions
     const getNumberOfPlayers = () => numberOfPlayers
     const getPlayer1 = () => player1
     const getPlayer2 = () => player2  
@@ -169,35 +174,61 @@ function assignRandomEnemyName(){
 
 const gameBoard = (function(){
 
+    const numberOfPlayers = playerSelection.getNumberOfPlayers()
+    let currentPlayer = playerSelection.getPlayer1()
 
     let boardArray = [
-        '', '', '', 
+        '', 'x', 'o', 
         '', '', '',
         '', '', ''];
+
 
 function init() {
     animations.fadeIn(DOM.gameBoardDiv, 'grid', '30rem')
     animations.fadeIn(DOM.scoresDiv, 'flex')
     renderBoard()
-    scoreBoard.updateDisplayNames()
+    // scoreBoard.updateDisplayNames()
 }
 
+//Event Listeners
+DOM.cells.forEach(cell => cell.addEventListener('click', addSignToCell))
+
+function addSignToCell(e){
+    const clickedCell = e.target
+    const clickedCellNumber = e.target.dataset.number
+    const clickedCellContent = e.target.textContent
+    if (clickedCellContent) animations.takenCellError(clickedCell, clickedCellContent)
+
+    else {
+        boardArray[clickedCellNumber] = 'x'
+    renderBoard()
+    }
+
+}
+
+
+
+function renderBoard(){
+    populateBoard()
+}
+function populateBoard(){
+    let index = 0
+    DOM.cells.forEach(cell => {
+        cell.dataset.number = index
+        cell.textContent = boardArray[index]
+        cell.textContent === 'o' ? cell.classList.add('orange-text') : cell.classList.add('blue-text')
+        index++
+    })
+}
+
+
+
 return {init}
+
 })()
         //     let lastPlayer = 2
 //     let player1Score = 0
 //     let player2Score = 0
-
-//     cells.forEach(cell => {
-//         cell.addEventListener('click', addSignToBoard)
-//     })
-
-//     function appear(){
-//         animations.fadeIn(gameBoardDiv, 'grid', '30rem')
-//         animations.fadeIn(scoresDiv, 'flex')
-//         gameBoard.renderBoard()
-//         scoreBoard.updateDisplayNames()
-//     }
 
 //     function addSignToBoard(e){
 //         const currentCell = e.target
@@ -432,7 +463,7 @@ function highlightWinningRow(combo, lastPlayer){
 }
 
     function takenCellError(cell, value){
-        cell.textContent = '🧐  ';
+        cell.textContent = `🧐`;
         setTimeout(function(){
             cell.textContent = value
         }, 500)
