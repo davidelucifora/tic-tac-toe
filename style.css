@@ -2,8 +2,6 @@
 :root {
 
 --onyx: #393d3fff;
---forest-green-web: #248232ff;
---indian-yellow: #e09f3eff;
 --turquoise-blue: #80ffecff;
 --red-salsa: #f15156ff;
 }
@@ -179,7 +177,9 @@ input:focus{
         height:0;
     transition: all 0.2s linear;
 }
-
+#winner{
+    font-weight:400;
+}
 
 
 
