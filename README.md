@@ -12,6 +12,14 @@ The purpose of this exercise is to put into practice what learned about factory 
 Optional: Allow the choice to play against the computer. 
 Extra Bonus: Make the computer smart using an AI (minimax algorithm).
 
+## Features
+
+1 Player Game (Player vs PC)
+2 Players Game (Player vs Player)
+
+Work in Progress: Make the PC Smarter with a minimax algorithm
+
 ## Technologies Used
 HTML, CSS, Vanilla JavaScript.
+
 
