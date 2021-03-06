@@ -132,6 +132,8 @@ const playerSelection = (function(){
             player2 = Player(player2Name, 'x')
             animations.fadeOut(DOM.playerSelectionDiv)
             const newGame = true
+
+        DOM.gameBoardDiv.style.pointerEvents = 'auto'
             setTimeout(function(){gameBoard.init(newGame)},500)
         }
     }
@@ -259,6 +261,8 @@ function checkForWin(){
             if (boardArray[cell] === sign) index++
         })
         if (index === 3){
+
+            DOM.gameBoardDiv.style.pointerEvents = 'none'
             animations.highlightWinningRow(combo, lastPlayer)
             lastPlayer === 1 ? player1Score++ : player2Score++
             scoreBoard.updateScores()
@@ -335,7 +339,6 @@ const endGame = (function(){
 
     function init(lastPlayer){
 
-        DOM.gameBoardDiv.style.pointerEvents = 'auto'
 
             switch(lastPlayer){
                 case 1:
@@ -410,7 +413,6 @@ const animations = (function(){
     }
     
 function highlightWinningRow(combo, lastPlayer){
-    DOM.gameBoardDiv.style.pointerEvents = 'none'
     let color = ''
     lastPlayer === 1 ? color = 'var(--red-salsa)' : color = 'var(--turquoise-blue)' 
     combo.split('').forEach(cell => {
