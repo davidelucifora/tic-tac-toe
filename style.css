@@ -258,19 +258,40 @@ color:var(--red-salsa);
     transition: all 0.5s linear
 }
 
-/*Portrait Phone*/
-@media (max-width: 575.98px) {
-
+#endgame-message{
+    text-align:center;
 }
 
 /* Small devices (landscape phones, less than 768px)*/
 @media (max-width: 767.98px) {
+
+    #container{
+    }
+    #players-selection{
+        flex-flow:column wrap;
+    }
+    #players-selection .form-group{
+        flex-flow:column wrap;
+        
+    }
+    .player-choice-button{
+        margin-bottom:1rem;
+    }
+
+    #choose-players-names{
+        flex-flow:column wrap;
+        justify-content:center;
+        align-items:center;
+        text-align:center;
+    }
+    .player-input{
+        margin-bottom:2rem;
+    }
+    #scores{
+        flex-flow:column wrap;
+    }
 }
 
 /* Medium devices (tablets, less than 992px)*/
 @media (max-width: 991.98px) {
-}
-
-/*Large devices (desktops, less than 1200px)*/
-@media (max-width: 1199.98px) {
 }
