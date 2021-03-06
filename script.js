@@ -41,8 +41,6 @@ const DOM = (function(){
 const playerSelection = (function(){
 
     let numberOfPlayers = 2 //Two Players selected by Default
-    let player1
-    let player2
         
     //Event Listeners
     DOM.onePlayerBtn.addEventListener('click', selectNumberOfPlayers);
@@ -130,10 +128,11 @@ const playerSelection = (function(){
         if (checkInput()){
             player1Name = checkInput().player1Name
             player2Name = checkInput().player2Name
-            player1 = Player(player1Name, 'x')
-            player2 = Player(player2Name, 'o')
+            player1 = Player(player1Name, 'o')
+            player2 = Player(player2Name, 'x')
             animations.fadeOut(DOM.playerSelectionDiv)
-            setTimeout(function(){gameBoard.init()},500)
+            const newGame = true
+            setTimeout(function(){gameBoard.init(newGame)},500)
         }
     }
 
@@ -174,18 +173,29 @@ const playerSelection = (function(){
 
 const gameBoard = (function(){
 
-    const numberOfPlayers = playerSelection.getNumberOfPlayers()
-    let currentPlayer = playerSelection.getPlayer1()
 
-    let boardArray = [
-        '', 'x', 'o', 
-        '', '', '',
-        '', '', ''];
+    let player1Score = 0
+    let player2Score = 0
+    let lastPlayer = 2 //First player starts by default.
+    let boardArray = [];
 
 
-function init() {
+function init(newGame) {
+    if (newGame) {
+        player1Score = 0
+        player2Score = 0
+    }
+
+    DOM.cells.forEach(cell => {
+        cell.classList.remove('blue-text')
+        cell.classList.remove('orange-text')})
+        
+    boardArray = []
+    lastPlayer = 2
     animations.fadeIn(DOM.gameBoardDiv, 'grid', '30rem')
     animations.fadeIn(DOM.scoresDiv, 'flex')
+    scoreBoard.updateDisplayNames()
+    scoreBoard.updateScores()
     renderBoard()
     // scoreBoard.updateDisplayNames()
 }
@@ -197,230 +207,198 @@ function addSignToCell(e){
     const clickedCell = e.target
     const clickedCellNumber = e.target.dataset.number
     const clickedCellContent = e.target.textContent
+    // Clicking on taken Cell returns an error
     if (clickedCellContent) animations.takenCellError(clickedCell, clickedCellContent)
-
+    
     else {
-        boardArray[clickedCellNumber] = 'x'
-    renderBoard()
+        
+        if (lastPlayer ===  1){
+            boardArray[clickedCellNumber] = playerSelection.getPlayer2().getPlayerSign()
+            lastPlayer = 2
+
+        }
+        else {
+            boardArray[clickedCellNumber] = playerSelection.getPlayer1().getPlayerSign()
+            lastPlayer = 1
+            checkForWin()
+
+            if (playerSelection.getNumberOfPlayers() === 1){
+                populateBoard()
+                addComputerSign()
+                lastPlayer = 2
+            }
+        }
+        renderBoard()
     }
+}
+
+//Adds PC Sign in Random Cell
+function addComputerSign(){
+    const emptyCellsIndexesArray = DOM.cells.map(cell => {
+        if (!cell.textContent) {
+            emptyCellIndex = cell.dataset.number
+            return emptyCellIndex
+        }
+    })
+    .filter(cell => {
+        return cell !== undefined // Array with indexes of free cells.
+    })
+    randomEmptyCellIndex = Math.floor(Math.random() * emptyCellsIndexesArray.length)
+    const randomEmptyCell = emptyCellsIndexesArray[randomEmptyCellIndex]
+    boardArray[randomEmptyCell] = playerSelection.getPlayer2().getPlayerSign()
 
 }
 
+function checkForWin(){
+    let sign 
+    lastPlayer === 1 ? sign = 'o' : sign = 'x'
+    const winningCombos = ['012', '345', '678', '048', '036', '147', '258', '246']
+    winningCombos.forEach(combo => {
+        let index = 0
+        combo.split('').forEach(cell => {
+            if (boardArray[cell] === sign) index++
+        })
+        if (index === 3){
+            animations.highlightWinningRow(combo, lastPlayer)
+            lastPlayer === 1 ? player1Score++ : player2Score++
+            scoreBoard.updateScores()
+            //return the winner
+            endGame.init(lastPlayer)
+            return lastPlayer
+            
+        }
+    })
+}
+
+function checkForTie(){
+    let index = 0
+    boardArray.forEach(cell => {
+        if (cell === 'x' || cell === 'o') index++
+    })
+    if (index === 9 && (checkForWin() !== 1 || checkForWin() !== 2)) {
+        lastPlayer = 0
+        animations.highlightWinningRow('012345678', 2)
+        endGame.init(lastPlayer)}
+    
+    }
 
 
 function renderBoard(){
     populateBoard()
+    styleBoardColors()
+    checkForWin()
+    checkForTie()
 }
+
+
 function populateBoard(){
     let index = 0
     DOM.cells.forEach(cell => {
         cell.dataset.number = index
         cell.textContent = boardArray[index]
-        cell.textContent === 'o' ? cell.classList.add('orange-text') : cell.classList.add('blue-text')
         index++
+    })
+}
+function styleBoardColors(){
+    DOM.cells.forEach(cell => {
+        cell.removeAttribute('style')
+        cell.classList.remove('blue-text')
+        cell.classList.remove('orange-text')
+        if (cell.textContent === 'o'){
+            cell.classList.remove('blue-text');
+            cell.classList.add('orange-text')
+        }
+        else if (cell.textContent === 'x'){
+            cell.classList.remove('orange-text')
+            cell.classList.add('blue-text')
+        }
     })
 }
 
 
 
-return {init}
+
+const getPlayer1Score = () => player1Score
+const getPlayer2Score = () => player2Score
+const getLastPlayer = () => lastPlayer
+
+return {init, getPlayer1Score, getPlayer2Score, getLastPlayer}
 
 })()
-        //     let lastPlayer = 2
-//     let player1Score = 0
-//     let player2Score = 0
 
-//     function addSignToBoard(e){
-//         const currentCell = e.target
-//         const currentCellNumber = currentCell.dataset.number
+
+const endGame = (function(){
+
+    //Event Listeners
+    DOM.rematchBtn.addEventListener('click', rematch)
+    DOM.mainMenuBtn.addEventListener('click', mainMenu)
+
+    function init(lastPlayer){
+
+        DOM.gameBoardDiv.style.pointerEvents = 'auto'
+
+            switch(lastPlayer){
+                case 1:
+                    DOM.winnerSpan.textContent = playerSelection.getPlayer1().getPlayerName()
+                    DOM.winnerSpan.classList.add('orange-text')
+                break;
+                case 2:
+                    DOM.winnerSpan.textContent = playerSelection.getPlayer2().getPlayerName()
+                    DOM.winnerSpan.classList.add('blue-text')
+                break;
+                default:
+                    DOM.endGameMsg.textContent = "It's a tie!"  
+            }
+            if (gameBoard.getLastPlayer() === 1) {
+                DOM.winnerSpan.textContent = playerSelection.getPlayer1().getPlayerName()
+            }
+            setTimeout(function(){appear()},2000)     
+    }
+        function appear(){
+            animations.fadeOut(DOM.gameBoardDiv)
+            animations.fadeOut(DOM.scoresDiv)
+            setTimeout(function(){
+                animations.fadeIn(DOM.endGameDiv, 'flex', '30vh')
+                animations.fadeIn(DOM.scoresDiv, 'flex')},600)     
+    }
+
+    function rematch(){
+        disappear()
+        setTimeout(function(){gameBoard.init(false)},600)
+    }
+    function mainMenu(){
+
+        disappear()
+        setTimeout(function(){animations.fadeIn(DOM.playerSelectionDiv, 'flex')},600)
         
-//         if (currentCell.textContent) {
-//             animations.takenCellError(currentCell, currentCell.textContent)
-//         }
-
-//         else{
-
-//             if(playerSelection.getNumberOfPlayers() === 2){
-
-//             if (checkTurn() === 1){
-//                 boardArray[currentCellNumber] = player1.getPlayerSign()
-//             }
-
-//             else{
-//                 boardArray[currentCellNumber] = player2.getPlayerSign()
-//             }
         
-       
-//         }
-
-//     else {
-
-//             boardArray[currentCellNumber] = player1.getPlayerSign()
-//             e.target.style.color = 'var(--red-salsa)'
-//             addRandomSign()
-
-//     }
-
-//     lastPlayer === 2 ? lastPlayer = 1 : lastPlayer = 2
-//     renderBoard()   
-
-// }
-// }
-
-// function addRandomSign(){
-//     let emptyCellsArray = []
-// for (let i = 0; i < boardArray.length; i++){
-//     if (boardArray[i] === '') emptyCellsArray.push(i)
-// }
-// const randomEmptyCell = emptyCellsArray[Math.floor(Math.random() * emptyCellsArray.length)]
-// boardArray[randomEmptyCell] = player2.getPlayerSign()
-// }
-
-//     function checkTurn(){ 
-//         if (lastPlayer === 2)  {
-//             scoreBoard.playerTwoNameDisplay.style.borderBottom = 'none'
-//             scoreBoard.playerOneNameDisplay.style.borderBottom = '1px solid var(--red-salsa)'
-//             return 1}
-//         else {
-//             scoreBoard.playerOneNameDisplay.style.borderBottom = 'none'
-//             scoreBoard.playerTwoNameDisplay.style.borderBottom = '1px solid var(--turquoise-blue)'
-//             return 2}
-//     }
+    }
 
 
-//     function renderBoard() {
-//         checkWin(lastPlayer)
-//         populateBoard() 
-//         checkTurn()
-//         scoreBoard.updateScores()
-//     }
+    function disappear(){        
+        animations.fadeOut(DOM.endGameDiv)
+        animations.fadeOut(DOM.scoresDiv)}
 
-//     function populateBoard() {
-//         let index = 0
-//         cells.forEach(cell => {
-//             //Assign unique incremental ID
-//             cell.dataset.number = index;
-//             //Display sign from boardArray to cell.
-//             cell.textContent = boardArray[index]
-//             cell.textContent === 'o' ? cell.style.color = 'var(--red-salsa)' : cell.style.color = 'var(--turquoise-blue)'
-//             index++;
-//         })
-//     }
+        return {init}
+})()
 
 
+const scoreBoard = (function(){
 
-// function checkWin(lastPlayer) {
-// const winningCombos = ['012', '345', '678', '048', '036', '147', '258', '246']
-//     let sign
-// lastPlayer === 1 ? sign = 'o' : sign = 'x'
-// console.log(sign)
-
-// winningCombos.forEach(combo => {
-//     let index = 0
-//     combo.split('').forEach(cell => {
-//         cell = parseInt(cell)
-//     if (sign === boardArray[cell]) index++
-//     });
-//     if (index === 3) {
-//         lockBoard()
-//         animations.highlightWinningRow(combo, lastPlayer)
-//         if (lastPlayer === 1) {
-//             player1Score++
-
-//         }
-//         else{
-//             player2Score++
-//         }
-//     setTimeout(function(){endGame(lastPlayer)},2000)
-//     }
-// });
-// }
-
-// function lockBoard(){
-//     gameBoardDiv.style.pointerEvents = 'none'
-//     setTimeout(function(){gameBoardDiv.style.pointerEvents = 'auto'}, 2400)
-// }
-
-// function endGame(lastPlayer){
-
-//     animations.fadeOut(gameBoardDiv)
-//     animations.fadeOut(scoresDiv)
-//     setTimeout(function(){
-//         animations.fadeIn(endGameDiv, 'flex', '30vh')
-//         animations.fadeIn(scoresDiv, 'flex')},600)
-//     const winnerSpan = document.getElementById('winner')
-//     const rematchBtn = document.getElementById('rematch-btn')
-//     const mainMenuBtn = document.getElementById('main-menu-btn')
-//     const endGameMsg = document.getElementById('endgame-message')
     
-//     if (lastPlayer === 1){
-//         winnerSpan.textContent = player1.getPlayerName()
-//         winnerSpan.style.color = 'var(--red-salsa)'
-//     }
-//     else if (lastPlayer === 2) {
-//     winnerSpan.textContent = player2.getPlayerName()
-//     winnerSpan.style.color = 'var(--turquoise-blue)'
-// }
-//     else {
-//         endGameMsg.textContent === 'It\'s a tie!';
-//     }
-//     rematchBtn.addEventListener('click', rematch)
-//     mainMenuBtn.addEventListener('click', goToMainMenu)
-// }
+    function updateDisplayNames(){
+    DOM.player1NameDisplay.textContent = playerSelection.getPlayer1().getPlayerName()
+    DOM.player2NameDisplay.textContent = playerSelection.getPlayer2().getPlayerName()
+    }
 
-// function rematch(){
-//     clearEndGameDiv()
-//     setTimeout(function(){appear()},600)
-
-// }
-
-// function goToMainMenu(){
-//     clearEndGameDiv()
-//     player1Score = 0
-//     player2Score = 0
-//     const mainMenu = playerSelection.playerSelectionDiv
-//     setTimeout(function(){
-//         animations.fadeIn(mainMenu, 'flex')
-// },600)
-// }
-
-// function clearEndGameDiv(){
-//     boardArray = ['', '', '', 
-//     '', '', '', 
-//     '', '', '', ]
-//     animations.fadeOut(endGameDiv)
-//     animations.fadeOut(scoresDiv)
-// }
+    function updateScores(){
+        DOM.player1ScoreDisplay.textContent = gameBoard.getPlayer1Score()
+        DOM.player2ScoreDisplay.textContent = gameBoard.getPlayer2Score()
+    }
 
 
-//     const getPlayer1Score = () => player1Score
-//     const getPlayer2Score = () => player2Score
-
-
-//     return {appear, renderBoard, getPlayer1Score, getPlayer2Score}
-    
-// })();
-
-// const scoreBoard = (function(){
-
-//     const playerOneNameDisplay = document.getElementById('player-1-name')
-//     const playerTwoNameDisplay = document.getElementById('player-2-name')
-//     const playerOneScoreDisplay = document.getElementById('player-1-score');
-//     const playerTwoScoreDisplay = document.getElementById('player-2-score');
-    
-//     function updateDisplayNames(){
-//     playerOneNameDisplay.textContent = player1.getPlayerName()
-//     playerTwoNameDisplay.textContent = player2.getPlayerName()
-// }
-
-//     function updateScores(){
-//         playerOneScoreDisplay.textContent = gameBoard.getPlayer1Score()
-//         playerTwoScoreDisplay.textContent = gameBoard.getPlayer2Score()
-
-//     }
-
-//     return {updateDisplayNames, updateScores, playerOneNameDisplay, playerTwoNameDisplay}
-
+    return {updateDisplayNames, updateScores}
+})()
 
 //Animations module
 const animations = (function(){
@@ -432,6 +410,7 @@ const animations = (function(){
     }
     
 function highlightWinningRow(combo, lastPlayer){
+    DOM.gameBoardDiv.style.pointerEvents = 'none'
     let color = ''
     lastPlayer === 1 ? color = 'var(--red-salsa)' : color = 'var(--turquoise-blue)' 
     combo.split('').forEach(cell => {
