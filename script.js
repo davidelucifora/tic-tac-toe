@@ -133,7 +133,6 @@ const playerSelection = (function(){
             animations.fadeOut(DOM.playerSelectionDiv)
             const newGame = true
 
-        DOM.gameBoardDiv.style.pointerEvents = 'auto'
             setTimeout(function(){gameBoard.init(newGame)},500)
         }
     }
@@ -188,6 +187,7 @@ function init(newGame) {
         player2Score = 0
     }
 
+    DOM.gameBoardDiv.style.pointerEvents = 'auto'
     DOM.cells.forEach(cell => {
         cell.classList.remove('blue-text')
         cell.classList.remove('orange-text')})
