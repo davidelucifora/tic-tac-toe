@@ -339,7 +339,7 @@ const endGame = (function(){
 
     function init(lastPlayer){
 
-
+        DOM.winnerSpan.classList.remove('orange-text', 'blue-text')
             switch(lastPlayer){
                 case 1:
                     DOM.winnerSpan.textContent = playerSelection.getPlayer1().getPlayerName()
