@@ -180,13 +180,15 @@ const gameBoard = (function(){
     let lastPlayer = 2 //First player starts by default.
     let boardArray = [];
 
+    let signsCounter = 0
+
 
 function init(newGame) {
     if (newGame) {
         player1Score = 0
         player2Score = 0
     }
-
+    signsCounter = 0
     DOM.gameBoardDiv.style.pointerEvents = 'auto'
     DOM.cells.forEach(cell => {
         cell.classList.remove('blue-text')
@@ -215,19 +217,29 @@ function addSignToCell(e){
     else {
         
         if (lastPlayer ===  1){
+            if (!checkForWin()){
+
             boardArray[clickedCellNumber] = playerSelection.getPlayer2().getPlayerSign()
             lastPlayer = 2
+            signsCounter++
+        }
 
         }
         else {
+            if(!checkForWin())
+            {
             boardArray[clickedCellNumber] = playerSelection.getPlayer1().getPlayerSign()
             lastPlayer = 1
-            checkForWin()
+            signsCounter++
+            }
 
             if (playerSelection.getNumberOfPlayers() === 1){
+               
                 populateBoard()
+                if (!checkForWin()){
                 addComputerSign()
-                lastPlayer = 2
+                signsCounter++
+                lastPlayer = 2}
             }
         }
         renderBoard()
@@ -236,6 +248,7 @@ function addSignToCell(e){
 
 //Adds PC Sign in Random Cell
 function addComputerSign(){
+   
     const emptyCellsIndexesArray = DOM.cells.map(cell => {
         if (!cell.textContent) {
             emptyCellIndex = cell.dataset.number
@@ -275,6 +288,7 @@ function checkForWin(){
 }
 
 function checkForTie(){
+   
     let index = 0
     boardArray.forEach(cell => {
         if (cell === 'x' || cell === 'o') index++
@@ -290,8 +304,7 @@ function checkForTie(){
 function renderBoard(){
     populateBoard()
     styleBoardColors()
-    checkForWin()
-    checkForTie()
+    if (signsCounter === 8) checkForTie()
 }
 
 

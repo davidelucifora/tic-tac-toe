@@ -269,8 +269,6 @@ color:var(--red-salsa);
         font-size:4rem;
     }
 
-    #container{
-    }
     #players-selection{
         flex-flow:column wrap;
         text-align:center;
