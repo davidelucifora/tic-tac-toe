@@ -217,8 +217,8 @@ function addSignToCell(e){
     else {
         
         if (lastPlayer ===  1){
-            if (!checkForWin()){
 
+            if (!checkForWin()){
             boardArray[clickedCellNumber] = playerSelection.getPlayer2().getPlayerSign()
             lastPlayer = 2
             signsCounter++
@@ -242,7 +242,9 @@ function addSignToCell(e){
                 lastPlayer = 2}
             }
         }
+        checkForWin()
         renderBoard()
+        console.log(signsCounter)
     }
 }
 
@@ -304,7 +306,7 @@ function checkForTie(){
 function renderBoard(){
     populateBoard()
     styleBoardColors()
-    if (signsCounter === 8) checkForTie()
+    if (signsCounter === 9) checkForTie()
 }
 
 
