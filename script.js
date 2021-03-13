@@ -184,10 +184,15 @@ const gameBoard = (function(){
 
 
 function init(newGame) {
+
+    DOM.endGameMsg.innerHTML = 'Congratulations! <span id="winner"></span> wins!'
     if (newGame) {
         player1Score = 0
         player2Score = 0
     }
+
+    
+    
     signsCounter = 0
     DOM.gameBoardDiv.style.pointerEvents = 'auto'
     DOM.cells.forEach(cell => {
@@ -355,15 +360,16 @@ const endGame = (function(){
     function init(lastPlayer){
 
         DOM.winnerSpan.classList.remove('orange-text', 'blue-text')
+        winnerSpan = document.getElementById('winner')
             switch(lastPlayer){
                 case 1:
-                    DOM.winnerSpan.textContent = playerSelection.getPlayer1().getPlayerName()
-                    DOM.winnerSpan.classList.add('orange-text')
+                    winnerSpan.textContent = playerSelection.getPlayer1().getPlayerName()
+                    winnerSpan.classList.add('orange-text')
                 break;
                 case 2:
-                    DOM.winnerSpan.textContent = playerSelection.getPlayer2().getPlayerName()
-                    DOM.winnerSpan.classList.add('blue-text')
-                break;
+                    winnerSpan.textContent = playerSelection.getPlayer2().getPlayerName()
+                    winnerSpan.classList.add('blue-text')
+                break
                 default:
                     DOM.endGameMsg.textContent = "It's a tie!"  
             }
