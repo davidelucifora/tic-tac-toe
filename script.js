@@ -223,33 +223,33 @@ function addSignToCell(e){
         
         if (lastPlayer ===  1){
 
-            if (!checkForWin()){
+            
             boardArray[clickedCellNumber] = playerSelection.getPlayer2().getPlayerSign()
             lastPlayer = 2
             signsCounter++
-        }
+            checkForWin()
+        
 
         }
-        else {
-            if(!checkForWin())
-            {
+        else {            
             boardArray[clickedCellNumber] = playerSelection.getPlayer1().getPlayerSign()
             lastPlayer = 1
             signsCounter++
-            }
+            checkForWin()
+            
 
             if (playerSelection.getNumberOfPlayers() === 1){
                
                 populateBoard()
-                if (!checkForWin()){
+                
                 addComputerSign()
                 signsCounter++
-                lastPlayer = 2}
-            }
+                lastPlayer = 2
+                checkForWin()}
+
+            
         }
-        checkForWin()
         renderBoard()
-        console.log(signsCounter)
     }
 }
 
@@ -280,7 +280,7 @@ function checkForWin(){
         combo.split('').forEach(cell => {
             if (boardArray[cell] === sign) index++
         })
-        if (index === 3){
+        if (index === 3){   
 
             DOM.gameBoardDiv.style.pointerEvents = 'none'
             animations.highlightWinningRow(combo, lastPlayer)
@@ -295,16 +295,15 @@ function checkForWin(){
 }
 
 function checkForTie(){
-   
+
     let index = 0
     boardArray.forEach(cell => {
         if (cell === 'x' || cell === 'o') index++
     })
-    if (index === 9 && (checkForWin() !== 1 || checkForWin() !== 2)) {
+    if (index === 9 && (checkForWin() !== 1 && checkForWin() !== 2)) {
         lastPlayer = 0
         animations.highlightWinningRow('012345678', 2)
         endGame.init(lastPlayer)}
-    
     }
 
 
@@ -312,6 +311,7 @@ function renderBoard(){
     populateBoard()
     styleBoardColors()
     if (signsCounter === 9) checkForTie()
+    
 }
 
 
