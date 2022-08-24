@@ -6,7 +6,7 @@ A Tic Tac Toe game for 1 or two players built on HTML, CSS and Vanilla Javascrip
 
 ![image](https://user-images.githubusercontent.com/40455204/110209559-3f3adc80-7eb3-11eb-9907-4d73ee0c28f1.png)
 
-## Live Demo: https://dalux21.github.io/tic-tac-toe/
+## [Live Demo](https://dalux21.github.io/tic-tac-toe/)
 
 Assignment part of The Odin Project. The focus of this project was to learn how to use the module pattern in Javascript (Factories and IIFEs).
 
