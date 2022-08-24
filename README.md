@@ -1,4 +1,4 @@
-# tic-tac-toe
+# Tic Tac Toe Game
 
 A Tic Tac Toe game for 1 or two players built on HTML, CSS and Vanilla Javascript.
 
